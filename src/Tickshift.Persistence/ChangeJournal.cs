@@ -14,6 +14,10 @@ public enum ChangeStatus
     RollbackFailed,
     /// <summary>Interrupted change whose final state could not be determined automatically.</summary>
     Indeterminate,
+    /// <summary>The setting was changed by something else after TICKSHIFT changed it, so it was deliberately left alone.</summary>
+    Superseded,
+    /// <summary>A change that cannot be undone (for example, deleted temporary files).</summary>
+    Completed,
 }
 
 /// <summary>One auditable system modification.</summary>

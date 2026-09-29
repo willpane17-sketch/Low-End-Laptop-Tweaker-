@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Narrowly scoped administrator helper. It performs exactly two validated operations and exits.
+    It has no network access, reads no input other than its command line, and never runs a shell.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>Tickshift.ElevatedHelper</RootNamespace>
+    <AssemblyName>Tickshift.ElevatedHelper</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\..\assets\tickshift.ico</ApplicationIcon>
+    <AssemblyTitle>TICKSHIFT administrator helper</AssemblyTitle>
+    <Description>Performs a fixed, validated set of administrator operations for TICKSHIFT.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tickshift.Security\Tickshift.Security.csproj" />
+    <PackageReference Include="System.Management" />
+  </ItemGroup>
+</Project>
