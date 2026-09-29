@@ -1,0 +1,23 @@
+<UserControl x:Class="Tickshift.App.Views.PageStatus"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Tickshift.App.Controls"
+             Focusable="False">
+    <!-- Shows the page's StatusMessage. Inherits the page view-model as DataContext. -->
+    <Border Visibility="{Binding StatusMessage, Converter={StaticResource Visible}}" AutomationProperties.LiveSetting="Polite">
+        <Border.Style>
+            <Style TargetType="Border" BasedOn="{StaticResource NoticeAccent}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding StatusIsError}" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource BadSoft}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource BadSoft}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <DockPanel>
+            <c:Icon DockPanel.Dock="Left" Data="{StaticResource Icon.Info}" Width="16" Height="16" VerticalAlignment="Top" Margin="0,1,10,0" Foreground="{DynamicResource TextSecondary}" />
+            <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource Body}" />
+        </DockPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,186 @@
+<UserControl x:Class="Tickshift.App.Views.BrowserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Tickshift.App.Controls"
+             xmlns:local="clr-namespace:Tickshift.App.Views">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel Margin="{DynamicResource PagePadding}">
+            <DockPanel Margin="0,0,0,18">
+                <Border DockPanel.Dock="Right" Style="{StaticResource SegmentHost}" VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton Style="{StaticResource Segment}" GroupName="Browser" Content="Microsoft Edge" IsChecked="{Binding SelectedBrowser, Converter={StaticResource EnumEquals}, ConverterParameter=Edge}" />
+                        <RadioButton Style="{StaticResource Segment}" GroupName="Browser" Content="Google Chrome" IsChecked="{Binding SelectedBrowser, Converter={StaticResource EnumEquals}, ConverterParameter=Chrome}" />
+                    </StackPanel>
+                </Border>
+                <StackPanel>
+                    <TextBlock Text="Browser Booster" Style="{StaticResource PageTitle}" AutomationProperties.HeadingLevel="Level1" />
+                    <TextBlock Style="{StaticResource PageSubtitle}"
+                               Text="Make Edge and Chrome lighter without touching your passwords, cookies, history or sessions. Settings are changed by you, in the browser, with exact guidance." />
+                </StackPanel>
+            </DockPanel>
+
+            <local:PageStatus />
+
+            <!-- Overview -->
+            <Border Style="{StaticResource HeroCard}">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Command="{Binding RefreshCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource Not}}">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Refresh}" Width="14" Height="14" />
+                                <TextBlock Text="Refresh" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                        <TextBlock Text="{Binding InstalledText}" Style="{StaticResource SectionTitle}" />
+                    </DockPanel>
+                    <c:ResponsiveGrid MinColumnWidth="240" MaxColumns="3" Spacing="{DynamicResource GridSpacing}">
+                        <StackPanel>
+                            <TextBlock Text="RESOURCE USE" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding UsageText}" Style="{StaticResource Body}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="BACKGROUND ACTIVITY" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding BackgroundText}" Style="{StaticResource Body}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="EFFICIENCY FEATURE" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding EfficiencyText}" Style="{StaticResource Body}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="EXTENSIONS" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding ExtensionsText}" Style="{StaticResource Body}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="DISPOSABLE CACHE" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding CacheText}" Style="{StaticResource Body}" />
+                            <Button Style="{StaticResource LinkButton}" Content="Clear it in System Cleanup →" Command="{Binding OpenCleanupCommand}" HorizontalAlignment="Left" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </c:ResponsiveGrid>
+                    <TextBlock Style="{StaticResource Caption}" Margin="0,12,0,0"
+                               Text="Settings detected from enterprise policies are authoritative. Others are read (never written) from the browser's own files and may not reflect changes made in the last few minutes." />
+                </StackPanel>
+            </Border>
+
+            <!-- Recommendations -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Recommended settings" Style="{StaticResource SectionTitle}" />
+                    <ItemsControl ItemsSource="{Binding Tips}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,8">
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right" VerticalAlignment="Center" Margin="12,0,0,0" Content="{Binding ButtonText}"
+                                                Command="{Binding DataContext.OpenPageCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding SettingsKey}"
+                                                Visibility="{Binding SettingsKey, Converter={StaticResource Visible}}" />
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <c:StatusBadge Text="{Binding Severity}" Kind="{Binding Severity, Converter={StaticResource BadgeKind}}" Margin="0,0,8,0" />
+                                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Body}" Style="{StaticResource Secondary}" Margin="0,6,0,0" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Protected trading websites -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Protected trading websites" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource Secondary}" Margin="0,0,0,12">
+                        <Run Text="Keep charting and broker sites awake when" /><Run Text=" " /><Run Text="{Binding FeatureName, Mode=OneWay}" /><Run Text=" is on. Browsers do not let other apps change this list safely, so TICKSHIFT gives you the exact entries to add." />
+                    </TextBlock>
+                    <DockPanel Margin="0,0,0,10">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Content="Add website" Command="{Binding AddSiteCommand}" CommandParameter="{Binding NewSite}" Margin="10,0,0,0" />
+                        <TextBox Text="{Binding NewSite, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Website address, for example tradingview.com" ToolTip="For example: tradingview.com or your broker's web terminal address" />
+                    </DockPanel>
+                    <WrapPanel Margin="0,0,0,10">
+                        <TextBlock Text="Suggestions:" Style="{StaticResource Caption}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <Button Style="{StaticResource LinkButton}" Content="tradingview.com" Command="{Binding AddSiteCommand}" CommandParameter="tradingview.com" Margin="0,0,14,0" />
+                        <Button Style="{StaticResource LinkButton}" Content="forexfactory.com" Command="{Binding AddSiteCommand}" CommandParameter="forexfactory.com" Margin="0,0,14,0" />
+                        <Button Style="{StaticResource LinkButton}" Content="investing.com" Command="{Binding AddSiteCommand}" CommandParameter="investing.com" />
+                    </WrapPanel>
+                    <ItemsControl ItemsSource="{Binding Sites}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="6" AutomationProperties.Name="Remove website"
+                                                Command="{Binding DataContext.RemoveSiteCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                            <c:Icon Data="{StaticResource Icon.Close}" Width="12" Height="12" />
+                                        </Button>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <c:Icon Data="{StaticResource Icon.Lock}" Width="14" Height="14" Foreground="{DynamicResource Accent}" />
+                                            <TextBlock Text="{Binding Domain}" FontWeight="SemiBold" Margin="10,0,0,0" />
+                                            <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Visibility="{Binding Sites.Count, Converter={StaticResource Visible}}" Margin="0,10,0,0">
+                        <TextBlock Text="How to add them in your browser" Style="{StaticResource CardTitle}" Margin="0,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding GuideSteps}" AlternationCount="100" Focusable="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                        <Border Width="22" Height="22" CornerRadius="11" Background="{DynamicResource AccentSoft}" VerticalAlignment="Top">
+                                            <TextBlock Text="{Binding (ItemsControl.AlternationIndex), RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={x:Static local:PlusOneConverter.Instance}}"
+                                                       FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Accent}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <TextBlock Text="{Binding}" Style="{StaticResource Body}" Margin="10,2,0,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <ItemsControl ItemsSource="{Binding Patterns}" Focusable="False" Margin="0,6,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Margin="0,0,8,8" ToolTip="Copy to clipboard"
+                                            Command="{Binding DataContext.CopyPatternCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding}" FontFamily="Consolas" />
+                                            <c:Icon Data="{StaticResource Icon.Copy}" Width="13" Height="13" Margin="8,0,0,0" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button HorizontalAlignment="Left" Content="Open the browser's performance settings" Command="{Binding OpenPageCommand}" CommandParameter="performance" Margin="0,4,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Measurement -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Before and after" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource Secondary}" Text="Measure the browser's real memory and processor use (averaged over 10 seconds), make changes, then measure again." />
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Style="{StaticResource PrimaryButton}" Command="{Binding MeasureCommand}" IsEnabled="{Binding IsMeasuring, Converter={StaticResource Not}}">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Pulse}" Width="15" Height="15" />
+                                <TextBlock Text="Measure now" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                        <Button Content="Reset baseline" Command="{Binding ResetBaselineCommand}" Margin="10,0,0,0" Visibility="{Binding Baseline, Converter={StaticResource Visible}}" />
+                    </StackPanel>
+                    <TextBlock Text="Measuring for 10 seconds — keep the browser as it is…" Style="{StaticResource Caption}" Margin="0,12,0,0" Visibility="{Binding IsMeasuring, Converter={StaticResource Visible}}" />
+                    <TextBlock Text="{Binding ComparisonText}" Style="{StaticResource Body}" Margin="0,12,0,0" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

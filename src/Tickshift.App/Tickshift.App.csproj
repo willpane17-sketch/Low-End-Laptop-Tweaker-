@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Tickshift.App</RootNamespace>
+    <AssemblyName>Tickshift</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\..\assets\tickshift.ico</ApplicationIcon>
+    <AssemblyTitle>TICKSHIFT</AssemblyTitle>
+    <Description>TICKSHIFT — performance, when every second matters. Safe, transparent optimisation for older Windows laptops.</Description>
+    <TieredPGO>true</TieredPGO>
+    <!-- Startup speed on old CPUs: precompile when publishing. -->
+    <PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tickshift.Core\Tickshift.Core.csproj" />
+    <ProjectReference Include="..\Tickshift.Security\Tickshift.Security.csproj" />
+    <ProjectReference Include="..\Tickshift.Persistence\Tickshift.Persistence.csproj" />
+    <ProjectReference Include="..\Tickshift.Hardware\Tickshift.Hardware.csproj" />
+    <ProjectReference Include="..\Tickshift.Diagnostics\Tickshift.Diagnostics.csproj" />
+    <ProjectReference Include="..\Tickshift.Optimization\Tickshift.Optimization.csproj" />
+    <ProjectReference Include="..\Tickshift.Trading\Tickshift.Trading.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="..\..\assets\tickshift.ico" Link="Assets\tickshift.ico" />
+  </ItemGroup>
+
+  <!-- Ship the elevated helper next to the main executable (exe project reference copies its apphost). -->
+  <ItemGroup>
+    <ProjectReference Include="..\Tickshift.ElevatedHelper\Tickshift.ElevatedHelper.csproj" />
+  </ItemGroup>
+</Project>

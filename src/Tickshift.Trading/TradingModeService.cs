@@ -84,7 +84,7 @@ public sealed class PressureEvaluator
 /// applications, never touches process priorities, never interacts with brokers, accounts or orders,
 /// and restores every temporary change when the session ends (or on next launch after a crash).
 /// </summary>
-public sealed class TradingModeService : ITradingSessionState, IAsyncDisposable
+public sealed class TradingModeService : IAsyncDisposable
 {
     private static readonly TimeSpan NotificationCooldown = TimeSpan.FromMinutes(10);
 
@@ -96,6 +96,7 @@ public sealed class TradingModeService : ITradingSessionState, IAsyncDisposable
     private readonly INotificationService _notifications;
     private readonly ISettingsStore _settings;
     private readonly AppDataPaths _paths;
+    private readonly TradingSessionFlag _flag;
     private readonly ILogger _logger;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly PressureEvaluator _pressure = new();
@@ -105,7 +106,7 @@ public sealed class TradingModeService : ITradingSessionState, IAsyncDisposable
     private Task? _monitor;
 
     public TradingModeService(OptimisationEngine engine, RecoveryService recovery, IChangeJournal journal, IProcessProvider processes,
-        IMetricsSource metrics, INotificationService notifications, ISettingsStore settings, AppDataPaths paths, ILogger<TradingModeService>? logger = null)
+        IMetricsSource metrics, INotificationService notifications, ISettingsStore settings, AppDataPaths paths, TradingSessionFlag flag, ILogger<TradingModeService>? logger = null)
     {
         _engine = engine;
         _recovery = recovery;
@@ -115,6 +116,7 @@ public sealed class TradingModeService : ITradingSessionState, IAsyncDisposable
         _notifications = notifications;
         _settings = settings;
         _paths = paths;
+        _flag = flag;
         _logger = logger ?? NullLogger<TradingModeService>.Instance;
     }
 
@@ -250,6 +252,7 @@ public sealed class TradingModeService : ITradingSessionState, IAsyncDisposable
     private void SetState(TradingModeState state)
     {
         State = state;
+        _flag.Set(IsActive);
         StateChanged?.Invoke(this, state);
     }
 

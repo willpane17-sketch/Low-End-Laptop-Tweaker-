@@ -1,0 +1,143 @@
+<UserControl x:Class="Tickshift.App.Views.PerformanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Tickshift.App.Controls"
+             xmlns:local="clr-namespace:Tickshift.App.Views">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel Margin="{DynamicResource PagePadding}">
+            <TextBlock Text="Performance Monitor" Style="{StaticResource PageTitle}" AutomationProperties.HeadingLevel="Level1" />
+            <TextBlock Style="{StaticResource PageSubtitle}" Margin="0,4,0,18" Text="Live history, the apps using your processor and memory, and real before-and-after measurements." />
+
+            <local:PageStatus />
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,10">
+                        <Border DockPanel.Dock="Right" Style="{StaticResource SegmentHost}">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton Style="{StaticResource Segment}" GroupName="PerfWindow" Content="5 min" IsChecked="{Binding SelectedWindow, Converter={StaticResource EnumEquals}, ConverterParameter=FiveMinutes}" />
+                                <RadioButton Style="{StaticResource Segment}" GroupName="PerfWindow" Content="30 min" IsChecked="{Binding SelectedWindow, Converter={StaticResource EnumEquals}, ConverterParameter=ThirtyMinutes}" />
+                                <RadioButton Style="{StaticResource Segment}" GroupName="PerfWindow" Content="1 hour" IsChecked="{Binding SelectedWindow, Converter={StaticResource EnumEquals}, ConverterParameter=OneHour}" />
+                                <RadioButton Style="{StaticResource Segment}" GroupName="PerfWindow" Content="Session" IsChecked="{Binding SelectedWindow, Converter={StaticResource EnumEquals}, ConverterParameter=Session}" />
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Text="History" Style="{StaticResource SectionTitle}" Margin="0,4,0,0" />
+                    </DockPanel>
+                    <WrapPanel Margin="0,0,0,8">
+                        <CheckBox Content="Processor" IsChecked="{Binding ShowCpu}" Margin="0,0,18,0" />
+                        <CheckBox Content="Memory" IsChecked="{Binding ShowMemory}" Margin="0,0,18,0" />
+                        <CheckBox Content="Disk" IsChecked="{Binding ShowDisk}" />
+                    </WrapPanel>
+                    <c:PerformanceChart Height="220" Samples="{Binding ChartSamples}" ShowCpu="{Binding ShowCpu}" ShowMemory="{Binding ShowMemory}" ShowDisk="{Binding ShowDisk}"
+                                        CpuBrush="{DynamicResource ChartCpu}" MemoryBrush="{DynamicResource ChartMemory}" DiskBrush="{DynamicResource ChartDisk}"
+                                        GridBrush="{DynamicResource ChartGrid}" LabelBrush="{DynamicResource TextMuted}" AutomationProperties.Name="Performance history chart" />
+                    <TextBlock Text="{Binding StatsText}" Style="{StaticResource Caption}" Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Process analyser -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Background process analyser" Style="{StaticResource SectionTitle}" />
+                    <DockPanel Margin="0,0,0,10">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="12,0,0,0">
+                            <CheckBox Content="Group by app" IsChecked="{Binding GroupByApp}" Margin="0,0,16,0" VerticalAlignment="Center" />
+                            <CheckBox Content="Hide Windows processes" IsChecked="{Binding HideWindows}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBox Text="{Binding ProcessFilter, UpdateSourceTrigger=PropertyChanged, Delay=200}" AutomationProperties.Name="Filter processes" ToolTip="Filter by name or publisher" />
+                    </DockPanel>
+
+                    <!-- Sortable header -->
+                    <Grid Margin="14,0,14,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="120" />
+                        </Grid.ColumnDefinitions>
+                        <Button Style="{StaticResource LinkButton}" Content="Name" Command="{Binding SortCommand}" CommandParameter="Name" Foreground="{DynamicResource TextMuted}" FontSize="11.5" HorizontalAlignment="Left" />
+                        <Button Grid.Column="1" Style="{StaticResource LinkButton}" Content="Processor ▾" Command="{Binding SortCommand}" CommandParameter="Cpu" Foreground="{DynamicResource TextMuted}" FontSize="11.5" HorizontalAlignment="Left" />
+                        <Button Grid.Column="2" Style="{StaticResource LinkButton}" Content="Memory" Command="{Binding SortCommand}" CommandParameter="Memory" Foreground="{DynamicResource TextMuted}" FontSize="11.5" HorizontalAlignment="Left" />
+                        <Button Grid.Column="3" Style="{StaticResource LinkButton}" Content="Disk" Command="{Binding SortCommand}" CommandParameter="Disk" Foreground="{DynamicResource TextMuted}" FontSize="11.5" HorizontalAlignment="Left" />
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding Processes}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource BgInset}" CornerRadius="8" Padding="14,7,14,7" Margin="0,0,0,3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="110" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="120" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="220" VerticalAlignment="Center" />
+                                            <c:StatusBadge Text="{Binding Category, Converter={StaticResource Friendly}}" Kind="{Binding Category, Converter={StaticResource BadgeKind}}" Margin="8,0,0,0" />
+                                            <TextBlock Text="{Binding Publisher}" Style="{StaticResource Caption}" Margin="8,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="180" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Cpu, StringFormat='{}{0:0.#}%'}" />
+                                            <Border Height="3" CornerRadius="1.5" Background="{DynamicResource Accent}" HorizontalAlignment="Left" Margin="0,3,0,0"
+                                                    Width="{Binding CpuBar, Converter={StaticResource PercentWidth}, ConverterParameter=90}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding Memory, Converter={StaticResource Bytes}}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="3" Text="{Binding DiskText}" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" />
+                                        <Button Grid.Column="4" Content="Ask to close…" Padding="10,4,10,4" HorizontalAlignment="Right"
+                                                Command="{Binding DataContext.AskToCloseCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}"
+                                                Visibility="{Binding CanClose, Converter={StaticResource Visible}}" AutomationProperties.Name="{Binding Name, StringFormat='Ask {0} to close'}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Style="{StaticResource Caption}" Margin="0,8,0,0"
+                               Text="Refreshes every 3 seconds while this page is open. Windows, security software and protected trading apps are never offered for closing, and nothing is closed automatically." />
+                </StackPanel>
+            </Border>
+
+            <!-- Benchmarks -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Command="{Binding MeasureCommand}" IsEnabled="{Binding IsBenchmarking, Converter={StaticResource Not}}">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Pulse}" Width="15" Height="15" />
+                                <TextBlock Text="Measure now" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                        <TextBlock Text="Before-and-after measurements" Style="{StaticResource SectionTitle}" />
+                    </DockPanel>
+                    <TextBlock Text="{Binding BenchmarkStatus}" Style="{StaticResource Secondary}" Margin="0,4,0,10" />
+                    <ItemsControl ItemsSource="{Binding BenchmarkDeltas}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="3*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Style="{StaticResource Caption}">
+                                            <Run Text="{Binding Before, Mode=OneWay, StringFormat='{}{0:0.#}', TargetNullValue='n/a'}" /><Run Text=" → " /><Run Text="{Binding After, Mode=OneWay, StringFormat='{}{0:0.#}', TargetNullValue='n/a'}" /><Run Text=" " /><Run Text="{Binding Unit, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <c:ComparisonBars Grid.Column="1" Before="{Binding Before, TargetNullValue=0}" After="{Binding After, TargetNullValue=0}" Margin="10,4,10,0"
+                                                      BeforeBrush="{DynamicResource LineStrong}" AfterBrush="{DynamicResource Accent}" />
+                                    <c:StatusBadge Grid.Column="2" Text="{Binding Assessment, Converter={StaticResource Friendly}}" Kind="{Binding Assessment, Converter={StaticResource BadgeKind}}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Style="{StaticResource Caption}" Margin="0,6,0,0"
+                               Text="Measurements are real readings over a fixed window. Background activity, room temperature, open apps and the power source all affect them; changes within normal variation are shown as “unchanged”." />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

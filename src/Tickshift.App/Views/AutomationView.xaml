@@ -1,0 +1,154 @@
+<UserControl x:Class="Tickshift.App.Views.AutomationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Tickshift.App.Controls"
+             xmlns:local="clr-namespace:Tickshift.App.Views">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel Margin="{DynamicResource PagePadding}">
+            <TextBlock Text="Automation" Style="{StaticResource PageTitle}" AutomationProperties.HeadingLevel="Level1" />
+            <TextBlock Style="{StaticResource PageSubtitle}" Margin="0,4,0,18"
+                       Text="Optional background monitoring. By default it only watches and recommends; it never closes apps and never runs during Trading Mode." />
+
+            <local:PageStatus />
+
+            <Border Style="{StaticResource HeroCard}">
+                <StackPanel>
+                    <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding Enabled}">
+                        <StackPanel>
+                            <TextBlock Text="Enable automation" FontWeight="SemiBold" FontSize="14" />
+                            <TextBlock Text="Checks once a minute using data TICKSHIFT already collects, so it adds almost no load." Style="{StaticResource Caption}" />
+                        </StackPanel>
+                    </CheckBox>
+                    <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding Paused}" Margin="0,12,0,0" IsEnabled="{Binding Enabled}">
+                        <StackPanel>
+                            <TextBlock Text="Pause automation" FontWeight="SemiBold" />
+                            <TextBlock Text="Keeps your choices but stops all automatic checks until you resume." Style="{StaticResource Caption}" />
+                        </StackPanel>
+                    </CheckBox>
+                    <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding NotificationsEnabled}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Notifications" FontWeight="SemiBold" />
+                            <TextBlock Text="Turn off to keep automation silent; results still appear in the history below." Style="{StaticResource Caption}" />
+                        </StackPanel>
+                    </CheckBox>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" IsEnabled="{Binding Enabled}">
+                <StackPanel>
+                    <TextBlock Text="Monitoring and recommendations" Style="{StaticResource SectionTitle}" />
+                    <c:ResponsiveGrid MinColumnWidth="300" MaxColumns="2" Spacing="{DynamicResource GridSpacing}">
+                        <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding DailyDiagnostic}">
+                            <StackPanel>
+                                <TextBlock Text="Daily lightweight diagnostic" FontWeight="SemiBold" />
+                                <TextBlock Text="A short scan once a day; skipped during Trading Mode." Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding StorageReminder}">
+                            <StackPanel>
+                                <TextBlock Text="Remind me about low storage" FontWeight="SemiBold" />
+                                <TextBlock Text="Checked every few hours." Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding MemoryAlerts}">
+                            <StackPanel>
+                                <TextBlock Text="Notify me about sustained memory pressure" FontWeight="SemiBold" />
+                                <TextBlock Text="Only after the threshold is exceeded for the whole period below." Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding ThermalMonitoring}">
+                            <StackPanel>
+                                <TextBlock Text="Monitor temperature" FontWeight="SemiBold" />
+                                <TextBlock Text="Only where the laptop reports a temperature sensor." Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding BrowserRecommendations}">
+                            <StackPanel>
+                                <TextBlock Text="Recommend browser optimisations" FontWeight="SemiBold" />
+                                <TextBlock Text="Included in the daily diagnostic." Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding BottleneckDetection}">
+                            <StackPanel>
+                                <TextBlock Text="Detect repeated bottlenecks" FontWeight="SemiBold" />
+                                <TextBlock Text="Sustained processor load above the threshold." Style="{StaticResource Caption}" />
+                            </StackPanel>
+                        </CheckBox>
+                    </c:ResponsiveGrid>
+
+                    <Border Style="{StaticResource Divider}" />
+                    <TextBlock Text="Thresholds" Style="{StaticResource CardTitle}" Margin="0,0,0,10" />
+                    <c:ResponsiveGrid MinColumnWidth="260" MaxColumns="2" Spacing="{DynamicResource GridSpacing}">
+                        <StackPanel>
+                            <TextBlock><Run Text="Memory pressure: " /><Run Text="{Binding MemoryThreshold, Mode=OneWay, StringFormat='{}{0:0}%'}" FontWeight="SemiBold" /></TextBlock>
+                            <Slider Minimum="60" Maximum="98" TickFrequency="1" Value="{Binding MemoryThreshold}" AutomationProperties.Name="Memory pressure threshold" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock><Run Text="Processor bottleneck: " /><Run Text="{Binding CpuThreshold, Mode=OneWay, StringFormat='{}{0:0}%'}" FontWeight="SemiBold" /></TextBlock>
+                            <Slider Minimum="50" Maximum="99" TickFrequency="1" Value="{Binding CpuThreshold}" AutomationProperties.Name="Processor bottleneck threshold" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock><Run Text="Sustained for: " /><Run Text="{Binding SustainedMinutes, Mode=OneWay, StringFormat='{}{0:0} min'}" FontWeight="SemiBold" /></TextBlock>
+                            <Slider Minimum="1" Maximum="30" TickFrequency="1" Value="{Binding SustainedMinutes}" AutomationProperties.Name="Sustained minutes" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock><Run Text="Low storage below: " /><Run Text="{Binding LowStoragePercent, Mode=OneWay, StringFormat='{}{0:0}%'}" FontWeight="SemiBold" /></TextBlock>
+                            <Slider Minimum="3" Maximum="40" TickFrequency="1" Value="{Binding LowStoragePercent}" AutomationProperties.Name="Low storage threshold" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Daily diagnostic time (24-hour, HH:mm)" />
+                            <TextBox Text="{Binding DailyTime, UpdateSourceTrigger=LostFocus}" Width="100" HorizontalAlignment="Left" Margin="0,6,0,0" AutomationProperties.Name="Daily diagnostic time" />
+                        </StackPanel>
+                    </c:ResponsiveGrid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" IsEnabled="{Binding Enabled}">
+                <StackPanel>
+                    <TextBlock Text="Unattended changes" Style="{StaticResource SectionTitle}" />
+                    <CheckBox Style="{StaticResource ToggleSwitch}" IsChecked="{Binding OptimiseAtLogin}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Optimise at Windows sign-in" FontWeight="SemiBold" />
+                            <TextBlock Text="Runs two minutes after sign-in (requires Launch with Windows). Only the items you approve below are applied — each is low-risk and fully reversible." Style="{StaticResource Caption}" />
+                        </StackPanel>
+                    </CheckBox>
+                    <TextBlock Text="Approved for unattended use" Style="{StaticResource CardTitle}" Margin="0,0,0,8" />
+                    <ItemsControl ItemsSource="{Binding Unattended}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                    <CheckBox IsChecked="{Binding IsApproved}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource Caption}" />
+                                        </StackPanel>
+                                    </CheckBox>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Style="{StaticResource Caption}" Margin="0,6,0,0" Text="File cleanup and anything that needs administrator rights can never run unattended." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Clear history" Command="{Binding ClearHistoryCommand}" />
+                        <TextBlock Text="Automation history" Style="{StaticResource SectionTitle}" />
+                    </DockPanel>
+                    <TextBlock Text="Nothing yet." Style="{StaticResource Caption}" Visibility="{Binding History.Count, Converter={StaticResource Collapsed}}" />
+                    <ItemsControl ItemsSource="{Binding History}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{StaticResource Secondary}" Margin="0,0,0,6">
+                                    <Run Text="{Binding At, Mode=OneWay, Converter={StaticResource Time}}" Foreground="{DynamicResource TextMuted}" /><Run Text="   " /><Run Text="{Binding Message, Mode=OneWay}" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

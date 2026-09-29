@@ -1,0 +1,177 @@
+<UserControl x:Class="Tickshift.App.Views.NetworkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Tickshift.App.Controls"
+             xmlns:local="clr-namespace:Tickshift.App.Views">
+    <ScrollViewer Style="{StaticResource PageScroll}">
+        <StackPanel Margin="{DynamicResource PagePadding}">
+            <TextBlock Text="Network Diagnostics" Style="{StaticResource PageTitle}" AutomationProperties.HeadingLevel="Level1" />
+            <TextBlock Style="{StaticResource PageSubtitle}" Margin="0,4,0,18"
+                       Text="Connection reliability checks. Read-only: DNS, IPv6, firewall, VPN and adapter settings are never changed." />
+
+            <local:PageStatus />
+
+            <Border Style="{StaticResource NoticeWarn}">
+                <TextBlock Text="{Binding Disclaimer}" Style="{StaticResource Body}" />
+            </Border>
+
+            <Border Style="{StaticResource HeroCard}">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Command="{Binding CheckCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Refresh}" Width="14" Height="14" />
+                                <TextBlock Text="Check again" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                        <TextBlock Text="{Binding ConnectionSummary}" Style="{StaticResource SectionTitle}" />
+                    </DockPanel>
+                    <c:ResponsiveGrid MinColumnWidth="220" MaxColumns="3" Spacing="{DynamicResource GridSpacing}">
+                        <StackPanel>
+                            <TextBlock Text="CONNECTION" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding MediumText}" Style="{StaticResource Body}" />
+                            <TextBlock Text="{Binding WifiText}" Style="{StaticResource Caption}" Visibility="{Binding WifiText, Converter={StaticResource Visible}}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="NAME RESOLUTION" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding DnsText}" Style="{StaticResource Body}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="ROUTER" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding GatewayText}" Style="{StaticResource Body}" />
+                        </StackPanel>
+                    </c:ResponsiveGrid>
+                    <Border Style="{StaticResource NoticeInfo}" Margin="0,12,0,0" Visibility="{Binding VpnDetected, Converter={StaticResource Visible}}">
+                        <TextBlock Style="{StaticResource Body}" Text="A VPN appears to be active. Latency results include the VPN route; TICKSHIFT will not interfere with it." />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Active adapters" Style="{StaticResource SectionTitle}" />
+                    <ItemsControl ItemsSource="{Binding Adapters}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                    <DockPanel>
+                                        <c:StatusBadge DockPanel.Dock="Right" Text="{Binding Medium}" Kind="Info" />
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource Caption}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="Cancel" Command="{Binding CancelTestsCommand}" Visibility="{Binding IsTesting, Converter={StaticResource Visible}}" Margin="0,0,10,0" />
+                            <Button Style="{StaticResource PrimaryButton}" Command="{Binding RunTestsCommand}" IsEnabled="{Binding IsTesting, Converter={StaticResource Not}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <c:Icon Data="{StaticResource Icon.Play}" Width="14" Height="14" />
+                                    <TextBlock Text="Run connectivity tests" Margin="8,0,0,0" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Latency and packet loss" Style="{StaticResource SectionTitle}" Margin="0" />
+                            <TextBlock Text="10 ICMP echo requests per host, plus TCP handshake timing where you set a port." Style="{StaticResource Caption}" Margin="0,2,0,10" />
+                        </StackPanel>
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding Results}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Target}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Style="{StaticResource Caption}">
+                                                <Run Text="{Binding Method, Mode=OneWay}" /><Run Text=" · avg " /><Run Text="{Binding AverageMs, Mode=OneWay, StringFormat='{}{0:0} ms', TargetNullValue='—'}" /><Run Text=" · min " /><Run Text="{Binding MinMs, Mode=OneWay, StringFormat='{}{0:0}', TargetNullValue='—'}" /><Run Text=" · max " /><Run Text="{Binding MaxMs, Mode=OneWay, StringFormat='{}{0:0}', TargetNullValue='—'}" /><Run Text=" · jitter " /><Run Text="{Binding JitterMs, Mode=OneWay, StringFormat='{}{0:0.#} ms', TargetNullValue='—'}" /><Run Text=" · loss " /><Run Text="{Binding LossPercent, Mode=OneWay, StringFormat='{}{0:0.#}%'}" />
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Error}" Style="{StaticResource Caption}" Foreground="{DynamicResource Warn}" Visibility="{Binding Error, Converter={StaticResource Visible}}" />
+                                        </StackPanel>
+                                        <c:StatusBadge Grid.Column="1" Text="{Binding Quality}" Kind="Info" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Your endpoints" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource Caption}" Margin="0,0,0,10"
+                               Text="Add your broker's server or another service you rely on. Only a host name or IP and an optional TCP port — never user names, passwords or account details." />
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="90" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Endpoint name" ToolTip="Name, e.g. My broker" />
+                        <TextBox Grid.Column="1" Margin="8,0,0,0" Text="{Binding NewHost, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Host name or IP address" ToolTip="Host name or IP address" />
+                        <TextBox Grid.Column="2" Margin="8,0,0,0" Text="{Binding NewPort, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="TCP port (optional)" ToolTip="TCP port (optional), e.g. 443" />
+                        <Button Grid.Column="3" Margin="8,0,0,0" Content="Add" Command="{Binding AddEndpointCommand}" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding Endpoints}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource Inset}" Margin="0,0,0,6">
+                                    <DockPanel>
+                                        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="6" AutomationProperties.Name="Remove endpoint"
+                                                Command="{Binding DataContext.RemoveEndpointCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}">
+                                            <c:Icon Data="{StaticResource Icon.Close}" Width="12" Height="12" />
+                                        </Button>
+                                        <TextBlock VerticalAlignment="Center">
+                                            <Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" /><Run Text="   " /><Run Text="{Binding Host, Mode=OneWay}" Foreground="{DynamicResource TextSecondary}" /><Run Text="{Binding TcpPort, Mode=OneWay, StringFormat=':{0}', TargetNullValue=''}" Foreground="{DynamicResource TextSecondary}" />
+                                        </TextBlock>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Clear history" Command="{Binding ClearHistoryCommand}" />
+                        <TextBlock Text="History" Style="{StaticResource SectionTitle}" />
+                    </DockPanel>
+                    <ItemsControl ItemsSource="{Binding History}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{StaticResource Caption}" Margin="0,0,0,4">
+                                    <Run Text="{Binding At, Mode=OneWay, Converter={StaticResource Time}}" /><Run Text="  ·  " /><Run Text="{Binding Target, Mode=OneWay}" /><Run Text="  ·  " /><Run Text="{Binding AverageMs, Mode=OneWay, StringFormat='{}{0:0} ms', TargetNullValue='no reply'}" /><Run Text="  ·  loss " /><Run Text="{Binding LossPercent, Mode=OneWay, StringFormat='{}{0:0.#}%'}" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Repair tools" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource Secondary}" Text="TICKSHIFT never resets adapters or changes network settings. If you need Windows' own troubleshooter or network reset, open it separately — it can disconnect you, so it is unavailable during Trading Mode." />
+                    <Button HorizontalAlignment="Left" Content="Open Windows network settings…" Command="{Binding OpenTroubleshooterCommand}" Margin="0,10,0,0" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

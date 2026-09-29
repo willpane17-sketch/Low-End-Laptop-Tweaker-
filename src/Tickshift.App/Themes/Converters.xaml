@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:conv="clr-namespace:Tickshift.App.Converters">
+    <conv:BoolToVisibilityConverter x:Key="Visible" />
+    <conv:BoolToVisibilityConverter x:Key="Collapsed" Invert="True" />
+    <conv:InverseBoolConverter x:Key="Not" />
+    <conv:EnumEqualsConverter x:Key="EnumEquals" />
+    <conv:BytesConverter x:Key="Bytes" />
+    <conv:TimestampConverter x:Key="Time" />
+    <conv:BadgeKindConverter x:Key="BadgeKind" />
+    <conv:FriendlyTextConverter x:Key="Friendly" />
+    <conv:PercentToWidthConverter x:Key="PercentWidth" />
+</ResourceDictionary>

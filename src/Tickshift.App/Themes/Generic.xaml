@@ -1,0 +1,123 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="clr-namespace:Tickshift.App.Controls">
+
+    <!-- Default templates for TICKSHIFT's custom controls. Brushes use DynamicResource so live theme switching works. -->
+
+    <Style TargetType="{x:Type c:Icon}">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="SnapsToDevicePixels" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type c:Icon}">
+                    <Viewbox Stretch="Uniform">
+                        <Grid Width="24" Height="24">
+                            <Path Data="{TemplateBinding Data}"
+                                  Stroke="{TemplateBinding Foreground}"
+                                  StrokeThickness="1.8"
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round"
+                                  StrokeLineJoin="Round" />
+                        </Grid>
+                    </Viewbox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type c:StatusBadge}">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="Background" Value="{DynamicResource BgInset}" />
+        <Setter Property="FontSize" Value="11.5" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type c:StatusBadge}">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="9,3,10,3">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse x:Name="Dot" Width="6" Height="6" Fill="{TemplateBinding Foreground}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{TemplateBinding Text}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Kind" Value="Accent">
+                <Setter Property="Foreground" Value="{DynamicResource Accent}" />
+                <Setter Property="Background" Value="{DynamicResource AccentSoft}" />
+            </Trigger>
+            <Trigger Property="Kind" Value="Good">
+                <Setter Property="Foreground" Value="{DynamicResource Good}" />
+                <Setter Property="Background" Value="{DynamicResource GoodSoft}" />
+            </Trigger>
+            <Trigger Property="Kind" Value="Warn">
+                <Setter Property="Foreground" Value="{DynamicResource Warn}" />
+                <Setter Property="Background" Value="{DynamicResource WarnSoft}" />
+            </Trigger>
+            <Trigger Property="Kind" Value="Bad">
+                <Setter Property="Foreground" Value="{DynamicResource Bad}" />
+                <Setter Property="Background" Value="{DynamicResource BadSoft}" />
+            </Trigger>
+            <Trigger Property="Kind" Value="Info">
+                <Setter Property="Foreground" Value="{DynamicResource InfoC}" />
+                <Setter Property="Background" Value="{DynamicResource InfoSoft}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type c:MetricCard}">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource BgCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource LineSubtle}" />
+        <Setter Property="Padding" Value="{DynamicResource CardPadding}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type c:MetricCard}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                            CornerRadius="12" Padding="{TemplateBinding Padding}"
+                            AutomationProperties.Name="{TemplateBinding Title}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <c:Icon Data="{TemplateBinding IconData}" Width="16" Height="16" Foreground="{DynamicResource TextSecondary}" Margin="0,0,8,0" />
+                                    <TextBlock Text="{TemplateBinding Title}" Foreground="{DynamicResource TextSecondary}" FontSize="12.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{TemplateBinding Value}" FontSize="{DynamicResource MetricValueSize}" FontWeight="SemiBold" Foreground="{TemplateBinding Foreground}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{TemplateBinding Unit}" FontSize="13" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Bottom" Margin="4,0,0,5" />
+                                </StackPanel>
+                                <TextBlock Text="{TemplateBinding Caption}" Foreground="{DynamicResource TextMuted}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <c:RingGauge x:Name="Ring" Grid.Column="1" Width="46" Height="46" Thickness="5" VerticalAlignment="Center" Margin="10,0,0,0"
+                                         Value="{TemplateBinding Percent}"
+                                         TrackBrush="{DynamicResource TrackBg}"
+                                         ValueBrush="{DynamicResource Accent}" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Percent" Value="-1">
+                            <Setter TargetName="Ring" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Status" Value="Warn">
+                            <Setter TargetName="Ring" Property="ValueBrush" Value="{DynamicResource Warn}" />
+                        </Trigger>
+                        <Trigger Property="Status" Value="Bad">
+                            <Setter TargetName="Ring" Property="ValueBrush" Value="{DynamicResource Bad}" />
+                        </Trigger>
+                        <Trigger Property="Status" Value="Good">
+                            <Setter TargetName="Ring" Property="ValueBrush" Value="{DynamicResource Good}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

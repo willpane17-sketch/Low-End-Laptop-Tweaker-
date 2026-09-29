@@ -1,0 +1,318 @@
+<Window x:Class="Tickshift.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:Tickshift.App.Controls"
+        xmlns:vm="clr-namespace:Tickshift.App.ViewModels"
+        xmlns:local="clr-namespace:Tickshift.App.Views"
+        Title="{Binding WindowTitle}"
+        Width="1280" Height="800" MinWidth="900" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BgWindow}"
+        Foreground="{DynamicResource TextPrimary}"
+        FontFamily="{StaticResource UiFont}"
+        FontSize="13"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        Icon="pack://application:,,,/Tickshift;component/Assets/tickshift.ico">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="D1" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" />
+        <KeyBinding Modifiers="Ctrl" Key="D2" Command="{Binding NavigateCommand}" CommandParameter="Optimise" />
+        <KeyBinding Modifiers="Ctrl" Key="D3" Command="{Binding NavigateCommand}" CommandParameter="Trading" />
+        <KeyBinding Modifiers="Ctrl" Key="D4" Command="{Binding NavigateCommand}" CommandParameter="Browser" />
+        <KeyBinding Modifiers="Ctrl" Key="D5" Command="{Binding NavigateCommand}" CommandParameter="Cleanup" />
+        <KeyBinding Modifiers="Ctrl" Key="D6" Command="{Binding NavigateCommand}" CommandParameter="Startup" />
+        <KeyBinding Modifiers="Ctrl" Key="D7" Command="{Binding NavigateCommand}" CommandParameter="Thermal" />
+        <KeyBinding Modifiers="Ctrl" Key="D8" Command="{Binding NavigateCommand}" CommandParameter="Performance" />
+        <KeyBinding Modifiers="Ctrl" Key="D9" Command="{Binding NavigateCommand}" CommandParameter="Network" />
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <local:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:OptimiseViewModel}">
+            <local:OptimiseView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TradingViewModel}">
+            <local:TradingView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:BrowserViewModel}">
+            <local:BrowserView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CleanupViewModel}">
+            <local:CleanupView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:StartupViewModel}">
+            <local:StartupView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ThermalViewModel}">
+            <local:ThermalView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:PerformanceViewModel}">
+            <local:PerformanceView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NetworkViewModel}">
+            <local:NetworkView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AutomationViewModel}">
+            <local:AutomationView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RecoveryViewModel}">
+            <local:RecoveryView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+            <local:SettingsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:OnboardingViewModel}">
+            <local:OnboardingView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Border x:Name="Frame" BorderBrush="{DynamicResource LineSubtle}" BorderThickness="1">
+        <Grid x:Name="Root">
+            <Grid.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding UiScale}" ScaleY="{Binding UiScale}" />
+            </Grid.LayoutTransform>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- ============ Sidebar ============ -->
+            <Border x:Name="Sidebar" Background="{DynamicResource SidebarGradient}" BorderBrush="{DynamicResource LineSubtle}" BorderThickness="0,0,1,0" Width="236">
+                <DockPanel Margin="12,0,12,12">
+                    <!-- Brand: sits in the caption area, so it doubles as a drag handle -->
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="64" Margin="6,6,0,4">
+                        <Border Width="34" Height="34" CornerRadius="9" Background="{DynamicResource AccentSoft}" VerticalAlignment="Center">
+                            <c:Icon Data="{StaticResource Icon.Trading}" Width="20" Height="20" Foreground="{DynamicResource Accent}" />
+                        </Border>
+                        <StackPanel Margin="12,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}">
+                            <TextBlock Text="{Binding ProductName}" FontFamily="{StaticResource DisplayFont}" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Text="Performance, when every second matters." FontSize="10" Foreground="{DynamicResource TextMuted}" TextTrimming="CharacterEllipsis" MaxWidth="160" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Footer: mode + version -->
+                    <StackPanel DockPanel.Dock="Bottom" Margin="4,8,4,0">
+                        <Button Style="{StaticResource GhostButton}" Command="{Binding NavigateCommand}" CommandParameter="Trading"
+                                HorizontalContentAlignment="Left" Padding="10,8,10,8"
+                                Visibility="{Binding IsTradingModeActive, Converter={StaticResource Visible}}"
+                                AutomationProperties.Name="Trading Mode is active. Open Trading Mode.">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="8" Height="8" Fill="{DynamicResource Accent}" VerticalAlignment="Center" />
+                                <TextBlock Text="TRADING MODE ACTIVE" Margin="10,0,0,0" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Accent}"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </Button>
+                        <TextBlock Text="{Binding Version}" Style="{StaticResource Caption}" Margin="12,6,0,0"
+                                   Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                    </StackPanel>
+
+                    <ScrollViewer Style="{StaticResource PageScroll}" KeyboardNavigation.TabNavigation="Once">
+                        <StackPanel KeyboardNavigation.DirectionalNavigation="Cycle">
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Dashboard"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Dashboard}"
+                                     AutomationProperties.Name="Dashboard" ToolTip="Dashboard (Ctrl+1)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Dashboard}" Width="19" Height="19" />
+                                <TextBlock Text="Dashboard" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Optimise"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Optimise}"
+                                     AutomationProperties.Name="One-Click Optimise" ToolTip="One-Click Optimise (Ctrl+2)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Bolt}" Width="19" Height="19" />
+                                <TextBlock Text="One-Click Optimise" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Trading"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Trading}"
+                                     AutomationProperties.Name="Trading Mode" ToolTip="Trading Mode (Ctrl+3)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Trading}" Width="19" Height="19" />
+                                <TextBlock Text="Trading Mode" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Browser"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Browser}"
+                                     AutomationProperties.Name="Browser Booster" ToolTip="Browser Booster (Ctrl+4)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Globe}" Width="19" Height="19" />
+                                <TextBlock Text="Browser Booster" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <TextBlock Text="MAINTAIN" Style="{StaticResource Label}" Margin="14,16,0,6" Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                        <Border Style="{StaticResource Divider}" Margin="10,10,10,10" Visibility="{Binding IsSidebarCompact, Converter={StaticResource Visible}}" />
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Cleanup"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Cleanup}"
+                                     AutomationProperties.Name="System Cleanup" ToolTip="System Cleanup (Ctrl+5)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Cleanup}" Width="19" Height="19" />
+                                <TextBlock Text="System Cleanup" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Startup"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Startup}"
+                                     AutomationProperties.Name="Startup Manager" ToolTip="Startup Manager (Ctrl+6)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Startup}" Width="19" Height="19" />
+                                <TextBlock Text="Startup Manager" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <TextBlock Text="MONITOR" Style="{StaticResource Label}" Margin="14,16,0,6" Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                        <Border Style="{StaticResource Divider}" Margin="10,10,10,10" Visibility="{Binding IsSidebarCompact, Converter={StaticResource Visible}}" />
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Thermal"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Thermal}"
+                                     AutomationProperties.Name="Thermal Monitor" ToolTip="Thermal Monitor (Ctrl+7)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Thermometer}" Width="19" Height="19" />
+                                <TextBlock Text="Thermal Monitor" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Performance"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Performance}"
+                                     AutomationProperties.Name="Performance Monitor" ToolTip="Performance Monitor (Ctrl+8)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Pulse}" Width="19" Height="19" />
+                                <TextBlock Text="Performance Monitor" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Network"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Network}"
+                                     AutomationProperties.Name="Network Diagnostics" ToolTip="Network Diagnostics (Ctrl+9)">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Wifi}" Width="19" Height="19" />
+                                <TextBlock Text="Network Diagnostics" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <TextBlock Text="CONTROL" Style="{StaticResource Label}" Margin="14,16,0,6" Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                        <Border Style="{StaticResource Divider}" Margin="10,10,10,10" Visibility="{Binding IsSidebarCompact, Converter={StaticResource Visible}}" />
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Automation"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Automation}"
+                                     AutomationProperties.Name="Automation" ToolTip="Automation">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Automation}" Width="19" Height="19" />
+                                <TextBlock Text="Automation" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Recovery"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Recovery}"
+                                     AutomationProperties.Name="Recovery Centre" ToolTip="Recovery Centre">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Shield}" Width="19" Height="19" />
+                                <TextBlock Text="Recovery Centre" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource NavItem}" GroupName="Nav" Command="{Binding NavigateCommand}" CommandParameter="Settings"
+                                     IsChecked="{Binding CurrentPageKey, Mode=OneWay, Converter={StaticResource EnumEquals}, ConverterParameter=Settings}"
+                                     AutomationProperties.Name="Settings" ToolTip="Settings">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Settings}" Width="19" Height="19" />
+                                <TextBlock Text="Settings" Margin="12,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                           Visibility="{Binding IsSidebarCompact, Converter={StaticResource Collapsed}}" />
+                            </StackPanel>
+                        </RadioButton>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- ============ Content ============ -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Title bar -->
+                <DockPanel Grid.Row="0">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button Style="{StaticResource TitleBarButton}" Click="OnMinimise" AutomationProperties.Name="Minimise">
+                            <c:Icon Data="{StaticResource Icon.Minimize}" Width="12" Height="12" />
+                        </Button>
+                        <Button x:Name="MaxButton" Style="{StaticResource TitleBarButton}" Click="OnMaximise" AutomationProperties.Name="Maximise">
+                            <c:Icon x:Name="MaxIcon" Data="{StaticResource Icon.Maximize}" Width="11" Height="11" />
+                        </Button>
+                        <Button Style="{StaticResource TitleBarCloseButton}" Click="OnClose" AutomationProperties.Name="Close">
+                            <c:Icon Data="{StaticResource Icon.Close}" Width="12" Height="12" />
+                        </Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="12,0,0,0">
+                        <Button Style="{StaticResource GhostButton}" Command="{Binding ToggleSidebarCommand}" WindowChrome.IsHitTestVisibleInChrome="True"
+                                AutomationProperties.Name="Toggle navigation" ToolTip="Collapse or expand the navigation" Padding="8,6,8,6" VerticalAlignment="Center">
+                            <c:Icon Data="{StaticResource Icon.Menu}" Width="16" Height="16" />
+                        </Button>
+                        <TextBlock Text="{Binding WindowTitle}" Foreground="{DynamicResource TextMuted}" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0" />
+                    </StackPanel>
+                </DockPanel>
+
+                <!-- Mode banners -->
+                <StackPanel Grid.Row="1">
+                    <Border Background="{DynamicResource AccentSoft}" Padding="32,8,24,8" Visibility="{Binding IsTradingModeActive, Converter={StaticResource Visible}}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource LinkButton}" Content="Manage Trading Mode" Command="{Binding NavigateCommand}" CommandParameter="Trading" />
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Data="{StaticResource Icon.Trading}" Foreground="{DynamicResource Accent}" Width="16" Height="16" />
+                                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Bold" Foreground="{DynamicResource Accent}" Text="TRADING MODE ACTIVE" />
+                                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" Text="Protected apps are never closed. Disruptive maintenance is deferred." />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                    <Border Background="{DynamicResource InfoSoft}" Padding="32,6,24,6" Visibility="{Binding IsDryRun, Converter={StaticResource Visible}}">
+                        <StackPanel Orientation="Horizontal">
+                            <c:Icon Data="{StaticResource Icon.Info}" Foreground="{DynamicResource InfoC}" Width="15" Height="15" />
+                            <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource InfoC}" FontWeight="SemiBold"
+                                       Text="Dry-run mode is on: TICKSHIFT shows what it would change but changes nothing. Turn it off in Settings." TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <ContentControl x:Name="PageHost" Grid.Row="2" Content="{Binding CurrentPage}" Focusable="False" />
+            </Grid>
+
+            <!-- ============ Toasts ============ -->
+            <ItemsControl Grid.ColumnSpan="2" ItemsSource="{Binding Toasts}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,24" Width="360" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource BgInset}" BorderBrush="{DynamicResource LineStrong}" BorderThickness="1" CornerRadius="12" Padding="14,12,10,12" Margin="0,8,0,0">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Padding="6" VerticalAlignment="Top"
+                                        Command="{Binding DataContext.DismissToastCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"
+                                        AutomationProperties.Name="Dismiss notification">
+                                    <c:Icon Data="{StaticResource Icon.Close}" Width="11" Height="11" />
+                                </Button>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Text="{Binding Body}" Style="{StaticResource Secondary}" Margin="0,3,0,0" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- ============ Onboarding overlay ============ -->
+            <ContentControl Grid.ColumnSpan="2" Content="{Binding Onboarding}" Focusable="False"
+                            Visibility="{Binding Onboarding, Converter={StaticResource Visible}}" />
+        </Grid>
+    </Border>
+</Window>
