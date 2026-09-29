@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Tickshift.Trading</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tickshift.Core\Tickshift.Core.csproj" />
+    <ProjectReference Include="..\Tickshift.Security\Tickshift.Security.csproj" />
+    <ProjectReference Include="..\Tickshift.Persistence\Tickshift.Persistence.csproj" />
+    <ProjectReference Include="..\Tickshift.Diagnostics\Tickshift.Diagnostics.csproj" />
+    <ProjectReference Include="..\Tickshift.Optimization\Tickshift.Optimization.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <InternalsVisibleTo Include="Tickshift.Tests" />
+  </ItemGroup>
+</Project>

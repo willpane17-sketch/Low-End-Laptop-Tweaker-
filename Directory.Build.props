@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <!-- Version information (single source of truth). -->
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Company>TICKSHIFT</Company>
+    <Product>TICKSHIFT</Product>
+    <Authors>TICKSHIFT contributors</Authors>
+    <Copyright>Copyright © 2026 TICKSHIFT contributors</Copyright>
+    <NeutralLanguage>en-GB</NeutralLanguage>
+
+    <!-- Keep the footprint small on older laptops. -->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+</Project>

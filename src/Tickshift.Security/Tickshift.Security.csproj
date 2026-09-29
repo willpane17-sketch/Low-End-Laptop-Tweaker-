@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Tickshift.Security</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Tickshift.Core\Tickshift.Core.csproj" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" />
+    <InternalsVisibleTo Include="Tickshift.Tests" />
+  </ItemGroup>
+</Project>
