@@ -64,7 +64,9 @@ public sealed class RecoveryService
     public async Task<RollbackReport> RollbackManyAsync(IEnumerable<ChangeRecord> records, CancellationToken ct)
     {
         var results = new List<RollbackItemResult>();
-        foreach (var record in records.OrderByDescending(r => r.Timestamp))
+        // Newest first; ties (same timestamp) are broken by journal insertion order so undo is always LIFO.
+        var insertion = _journal.GetAll().Select((r, i) => (r.Id, i)).ToDictionary(x => x.Id, x => x.i);
+        foreach (var record in records.OrderByDescending(r => r.Timestamp).ThenByDescending(r => insertion.GetValueOrDefault(r.Id, -1)))
         {
             ct.ThrowIfCancellationRequested();
             results.Add(new RollbackItemResult(record, await RollbackAsync(record, ct).ConfigureAwait(false)));

@@ -89,6 +89,18 @@ public sealed partial class ThermalViewModel : PageViewModel
 
     private async Task AssessAsync()
     {
+        try
+        {
+            await AssessCoreAsync();
+        }
+        catch (Exception ex)
+        {
+            ShowMessage("Thermal information could not be refreshed: " + Core.Errors.ErrorClassifier.FriendlyMessage(Core.Errors.ErrorClassifier.Classify(ex)), true);
+        }
+    }
+
+    private async Task AssessCoreAsync()
+    {
         _lastAssess = DateTimeOffset.Now;
         var thermal = _metrics.LatestThermal ?? await _metrics.RefreshThermalAsync(CancellationToken.None);
         var summary = await _summary.GetAsync();

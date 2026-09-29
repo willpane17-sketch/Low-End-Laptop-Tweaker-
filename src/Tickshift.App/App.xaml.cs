@@ -51,7 +51,17 @@ public partial class App : Application
         }
 
         var initialRetention = Persistence.AtomicJsonFile.Read<Core.Settings.AppSettings>(paths.SettingsFile).Value?.DataRetentionDays ?? 30;
-        _services = ServiceRegistration.Build(paths, initialRetention);
+        try
+        {
+            _services = ServiceRegistration.Build(paths, initialRetention);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"{Brand.ProductName} could not start:\n\n{ex.Message}", Brand.ProductName, MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+            return;
+        }
+
         _logger = _services.GetRequiredService<ILoggerFactory>().CreateLogger("App");
         HookExceptionHandlers();
         _logger.LogInformation("{Product} {Version} starting (autostart={Autostart}, elevated={Elevated}, os={Os})",
@@ -199,10 +209,9 @@ public partial class App : Application
         {
             if (_services is not null)
             {
-                _services.GetService<AutomationService>()?.DisposeAsync().AsTask().Wait(TimeSpan.FromSeconds(3));
-                _services.GetService<MetricsMonitor>()?.DisposeAsync().AsTask().Wait(TimeSpan.FromSeconds(3));
                 _logger?.LogInformation("{Product} exiting", Brand.ProductName);
-                _services.Dispose();
+                // DisposeAsync handles singletons that are only IAsyncDisposable (monitor, automation, Trading Mode).
+                _services.DisposeAsync().AsTask().Wait(TimeSpan.FromSeconds(5));
             }
         }
         catch (Exception)

@@ -30,6 +30,7 @@ public partial class MainWindow : Window
         StateChanged += OnStateChanged;
         viewModel.PropertyChanged += OnViewModelPropertyChanged;
         UpdateSidebar();
+        ApplyWindowStateVisuals(); // FitToWorkArea may already have maximised the window
     }
 
     public MainViewModel ViewModel { get; }
@@ -100,16 +101,42 @@ public partial class MainWindow : Window
         {
             UpdateSidebar();
         }
+        else if (e.PropertyName == nameof(MainViewModel.CurrentPage))
+        {
+            FadeInPage();
+        }
     }
 
-    private void OnStateChanged(object? sender, EventArgs e)
+    /// <summary>
+    /// A single 120 ms opacity fade on navigation — the only animation in TICKSHIFT. Skipped when the user
+    /// enables Reduce motion or Windows animations are turned off.
+    /// </summary>
+    private void FadeInPage()
+    {
+        if (ViewModel.ReducedMotion || !SystemParameters.ClientAreaAnimation)
+        {
+            PageHost.BeginAnimation(OpacityProperty, null);
+            PageHost.Opacity = 1;
+            return;
+        }
+
+        var fade = new System.Windows.Media.Animation.DoubleAnimation(0.35, 1, TimeSpan.FromMilliseconds(120)) { FillBehavior = System.Windows.Media.Animation.FillBehavior.Stop };
+        fade.Freeze();
+        PageHost.BeginAnimation(OpacityProperty, fade);
+    }
+
+    private void ApplyWindowStateVisuals()
     {
         // A maximised custom-chrome window extends past the screen edge by the resize border; compensate.
         Frame.Margin = WindowState == WindowState.Maximized ? new Thickness(7) : new Thickness(0);
         Frame.BorderThickness = WindowState == WindowState.Maximized ? new Thickness(0) : new Thickness(1);
         MaxIcon.Data = (System.Windows.Media.Geometry)FindResource(WindowState == WindowState.Maximized ? "Icon.Restore" : "Icon.Maximize");
         MaxButton.SetValue(System.Windows.Automation.AutomationProperties.NameProperty, WindowState == WindowState.Maximized ? "Restore" : "Maximise");
+    }
 
+    private void OnStateChanged(object? sender, EventArgs e)
+    {
+        ApplyWindowStateVisuals();
         var minimised = WindowState == WindowState.Minimized;
         _monitor.BackgroundMode = minimised;
         ViewModel.SetVisible(!minimised);

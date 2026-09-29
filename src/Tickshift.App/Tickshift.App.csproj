@@ -10,6 +10,10 @@
     <AssemblyTitle>TICKSHIFT</AssemblyTitle>
     <Description>TICKSHIFT — performance, when every second matters. Safe, transparent optimisation for older Windows laptops.</Description>
     <TieredPGO>true</TieredPGO>
+    <!-- Smaller install: English UI only, no localized framework resources, no symbols in the package. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <MvvmToolkitEnableINotifyPropertyChangingSupport>false</MvvmToolkitEnableINotifyPropertyChangingSupport>
     <!-- Startup speed on old CPUs: precompile when publishing. -->
     <PublishReadyToRun Condition="'$(RuntimeIdentifier)' != ''">true</PublishReadyToRun>
   </PropertyGroup>

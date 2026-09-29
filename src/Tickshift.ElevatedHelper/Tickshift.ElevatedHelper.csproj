@@ -11,6 +11,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>..\..\assets\tickshift.ico</ApplicationIcon>
     <AssemblyTitle>TICKSHIFT administrator helper</AssemblyTitle>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
     <Description>Performs a fixed, validated set of administrator operations for TICKSHIFT.</Description>
   </PropertyGroup>
   <ItemGroup>

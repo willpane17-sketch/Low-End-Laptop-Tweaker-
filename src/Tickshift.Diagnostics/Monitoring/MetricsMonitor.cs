@@ -195,14 +195,15 @@ public sealed class MetricsMonitor : IMetricsSource, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (_cts is null) return;
-        await _cts.CancelAsync().ConfigureAwait(false);
+        var cts = Interlocked.Exchange(ref _cts, null);
+        if (cts is null) return; // already disposed (safe to call twice)
+        await cts.CancelAsync().ConfigureAwait(false);
         if (_loop is not null)
         {
             try { await _loop.ConfigureAwait(false); }
             catch (OperationCanceledException) { }
         }
 
-        _cts.Dispose();
+        cts.Dispose();
     }
 }

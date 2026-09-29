@@ -97,7 +97,12 @@ public sealed class DialogService : IDialogService
 {
     public bool Confirm(ConfirmRequest request)
     {
-        var dialog = new Views.ConfirmDialog(request) { Owner = Application.Current?.MainWindow is { IsVisible: true } w ? w : null };
+        var owner = Application.Current?.MainWindow is { IsVisible: true } w ? w : null;
+        var dialog = new Views.ConfirmDialog(request)
+        {
+            Owner = owner,
+            WindowStartupLocation = owner is null ? WindowStartupLocation.CenterScreen : WindowStartupLocation.CenterOwner,
+        };
         return dialog.ShowDialog() == true;
     }
 

@@ -33,7 +33,9 @@ public static class ProcessCatalog
     /// <summary>Normalises "Name.exe" / "C:\path\Name.EXE" to "name".</summary>
     public static string Normalise(string processNameOrPath)
     {
-        var name = Path.GetFileName(processNameOrPath.Trim());
+        // Handle both separators explicitly: Windows paths must normalise identically on any host.
+        var trimmed = processNameOrPath.Trim();
+        var name = trimmed[(trimmed.LastIndexOfAny(['\\', '/']) + 1)..];
         if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) name = name[..^4];
         return name.ToLowerInvariant();
     }

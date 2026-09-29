@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Tickshift.Core\Tickshift.Core.csproj" />
+    <ProjectReference Include="..\..\src\Tickshift.Security\Tickshift.Security.csproj" />
+    <ProjectReference Include="..\..\src\Tickshift.Persistence\Tickshift.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Tickshift.Hardware\Tickshift.Hardware.csproj" />
+    <ProjectReference Include="..\..\src\Tickshift.Diagnostics\Tickshift.Diagnostics.csproj" />
+    <ProjectReference Include="..\..\src\Tickshift.Optimization\Tickshift.Optimization.csproj" />
+    <ProjectReference Include="..\..\src\Tickshift.Trading\Tickshift.Trading.csproj" />
+  </ItemGroup>
+</Project>
