@@ -12,17 +12,17 @@ dicts = ["Themes/Colors.Dark.xaml", "Themes/Colors.Light.xaml", "Themes/Density.
          "Themes/Converters.xaml", "Themes/Icons.xaml", "Themes/Styles.xaml", "Views/Shared/RecommendationTemplate.xaml"]
 def keys_in(text): return set(re.findall(r'x:Key="([^"]+)"', text))
 global_keys = set()
-for d in dicts: global_keys |= keys_in((root / d).read_text())
+for d in dicts: global_keys |= keys_in((root / d).read_text(encoding="utf-8"))
 for theme in ["Dark", "Light"]:
-    a = keys_in((root / f"Themes/Colors.{theme}.xaml").read_text())
-    b = keys_in((root / "Themes/Colors.Dark.xaml").read_text())
+    a = keys_in((root / f"Themes/Colors.{theme}.xaml").read_text(encoding="utf-8"))
+    b = keys_in((root / "Themes/Colors.Dark.xaml").read_text(encoding="utf-8"))
     if a != b: problems.append(f"Colors.{theme}.xaml keys differ from Dark: {sorted(a ^ b)}")
-a = keys_in((root / "Themes/Density.Compact.xaml").read_text()); b = keys_in((root / "Themes/Density.Comfortable.xaml").read_text())
+a = keys_in((root / "Themes/Density.Compact.xaml").read_text(encoding="utf-8")); b = keys_in((root / "Themes/Density.Comfortable.xaml").read_text(encoding="utf-8"))
 if a != b: problems.append(f"Density dictionaries differ: {sorted(a ^ b)}")
 
 for f in list(root.rglob("*.xaml")):
     if "/obj/" in str(f) or "/bin/" in str(f): continue
-    text = f.read_text()
+    text = f.read_text(encoding="utf-8")
     local = keys_in(text)
     for kind, key in re.findall(r'\{(StaticResource|DynamicResource) ([^}]+)\}', text):
         key = key.strip()
@@ -36,7 +36,7 @@ for f in list(root.rglob("*.xaml")):
 def vm_members(cls):
     members = {"IsBusy", "StatusMessage", "StatusIsError", "Title"}
     for cs in (root / "ViewModels").glob("*.cs"):
-        src = cs.read_text()
+        src = cs.read_text(encoding="utf-8")
         m = re.search(r'class ' + cls + r'\b[^{]*\{', src)
         if not m: continue
         # class body: until next top-level "public sealed" class declaration
